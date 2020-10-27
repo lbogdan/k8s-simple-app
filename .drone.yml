@@ -36,7 +36,7 @@ steps:
       IMAGE_TAG: 989b28ed
     commands:
       - echo $KUBECONFIG_DATA | base64 -d >/kubeconfig
-      - cat k8s/simple-app.yaml | envsub | kapp deploy -a simple-app-$ENV -c -f - -y
+      - cat k8s/simple-app.yaml | envsub | kapp deploy -a simple-app-$ENV.kapp -c -f - -y
 
 trigger:
   event:
