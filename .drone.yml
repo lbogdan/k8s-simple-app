@@ -14,26 +14,25 @@ steps:
   #     - echo -n $FOO | base64
   #     - printenv
 
-  # - name: build and publish image
-  #   image: lbogdan/drone-docker:2
-  #   settings:
-  #     repo: lbogdan/k8s-simple-app
-  #     tags:
-  #       - ${CI_COMMIT_SHA:0:8}
-  #     username:
-  #       from_secret: docker_username
-  #     password:
-  #       from_secret: docker_password
-  #   privileged: true
+  - name: build and publish image
+    image: lbogdan/drone-docker:2
+    settings:
+      repo: lbogdan/k8s-simple-app
+      tags:
+        - ${CI_COMMIT_SHA:0:8}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
 
-  - name: test kapp
+  - name: deploy to staging
     image: lbogdan/drone-kapp:1
     environment:
       KUBECONFIG: /kubeconfig
       KUBECONFIG_DATA:
         from_secret: kubeconfig_data
       ENV: staging
-      IMAGE_TAG: 989b28ed
+      IMAGE_TAG: ${CI_COMMIT_SHA:0:8}
     commands:
       - echo $KUBECONFIG_DATA | base64 -d >/kubeconfig
       - cat k8s/simple-app.yaml | envsub | kapp deploy -a simple-app-$ENV.kapp -c -f - -y
