@@ -3,17 +3,6 @@ type: kubernetes
 name: default
 
 steps:
-  # - name: print env variables
-  #   image: busybox
-  #   environment:
-  #     FOO:
-  #       from_secret: username
-  #     TAG: ${CI_COMMIT_SHA:0:8}
-  #   commands:
-  #     - echo ${CI_COMMIT_SHA:0:8}
-  #     - echo -n $FOO | base64
-  #     - printenv
-
   - name: build and publish image
     image: lbogdan/drone-docker:2
     settings:
@@ -43,3 +32,26 @@ trigger:
     - push
   branch:
     - main
+---
+kind: pipeline
+type: kubernetes
+name: production
+
+steps:
+  - name: deploy to production
+    image: lbogdan/drone-kapp:1
+    environment:
+      KUBECONFIG: /kubeconfig
+      KUBECONFIG_DATA:
+        from_secret: kubeconfig_data
+      ENV: production
+      IMAGE_TAG: ${CI_COMMIT_SHA:0:8}
+    commands:
+      - echo $KUBECONFIG_DATA | base64 -d >/kubeconfig
+      - cat k8s/simple-app.yaml | envsub | kapp deploy -a simple-app-$ENV.kapp -c -f - -y
+
+trigger:
+  event:
+    - promote
+  target:
+    - production
