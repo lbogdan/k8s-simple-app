@@ -4,7 +4,7 @@ const SECOND = 1000;
 
 const port = process.env.PORT || 9090;
 const env = process.env.ENV || '???';
-const version = 'v1';
+const version = 'v2';
 let ready = false;
 
 console.log('getting ready');
