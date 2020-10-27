@@ -15,7 +15,7 @@ steps:
   #     - printenv
 
   - name: build and publish image
-    image: lbogdan/drone-docker
+    image: lbogdan/drone-docker:1
     settings:
       repo: lbogdan/k8s-simple-app
       tags:
