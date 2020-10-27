@@ -1,0 +1,32 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+  # - name: print env variables
+  #   image: busybox
+  #   environment:
+  #     FOO:
+  #       from_secret: username
+  #     TAG: ${CI_COMMIT_SHA:0:8}
+  #   commands:
+  #     - echo ${CI_COMMIT_SHA:0:8}
+  #     - echo -n $FOO | base64
+  #     - printenv
+
+  - name: build and publish image
+    image: plugins/docker
+    settings:
+      repo: lbogdan/k8s-simple-app
+      tags:
+        - ${CI_COMMIT_SHA:0:8}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+
+trigger:
+  event:
+    - push
+  branch:
+    - main
